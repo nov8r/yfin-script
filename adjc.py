@@ -3,16 +3,15 @@ import pandas as pd
 
 def populate(ticker: str, startDate: str, endDate: str, dateCol: str, adjCloseCol: str, row: int):
     # download desired ticker data
-    data = yf.download(ticker, start=startDate, end=endDate)
+    data = yf.download(ticker, start=startDate, end=endDate, interval='1mo')
     
-    # isolate the 'Adj Close' variable and dates
-    adj_close = data['Adj Close']
-    dates = data.index
+    # Resample to get the last trading day of each month
+    data_monthly = data['Adj Close']
     
     # create a DataFrame to hold the dates and adj. close
     df = pd.DataFrame({
-        dateCol: dates.strftime('%Y-%m-%d'),    # Date
-        adjCloseCol: adj_close                  # Adj. Close
+        dateCol: data_monthly.index.strftime('%Y-%m-%d'),    # Date
+        adjCloseCol: data_monthly                            # Adj. Close
     })
     
     # Write the data to the Excel file
